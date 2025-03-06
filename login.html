@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Chubs n' Kakinr</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="root">
+        <h1 class="cube-text">Chubs n' Kakin</h1>
+
+        <form id="loginForm">
+            <h2>Login</h2>
+            <div class="container">
+                <div class="labels">
+                    <label for="username">Username:</label>
+                    <label for="password">Password:</label>
+                </div>
+                <div class="values">
+                    <input type="text" id="username" name="username" required placeholder="Enter your username">
+                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+                </div>
+            </div>
+            <div class="buttonContainer">
+                <button type="submit">Login</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+        });
+    </script>
+</body>
+</html>
