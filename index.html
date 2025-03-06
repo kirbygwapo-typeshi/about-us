@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zephyr - AI-Powered Fitness Transformation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary: #4a90e2;
+            --secondary: #50c878;
+            --accent: #ff6b6b;
+            --dark: #1a1a2e;
+            --light: #ffffff;
+            --text: #333333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--dark);
+            color: var(--light);
+            overflow-x: hidden;
+        }
+
+        .header {
+            background-color: var(--primary);
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--light);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background-color: var(--light);
+            bottom: -2px;
+            left: 0;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            transform: scaleX(1);
+        }
+
+        .info-popup {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: var(--dark);
+            border: 1px solid var(--primary);
+            border-radius: 4px;
+            padding: 1rem;
+            width: 250px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 1000;
+        }
+
+        .nav-links a:hover .info-popup {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .login-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .login-container {
+            background-color: var(--dark);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            transform: translateY(-50px);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-overlay.active .login-container {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .login-container h2 {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            text-align: center;
+            font-size: 2rem;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--primary);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            border-radius: 4px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .login-container input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 2px rgba(80, 200, 120, 0.3);
+        }
+
+        .login-container button[type="submit"] {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--primary);
+            color: var(--light);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .login-container button[type="submit"]:hover {
+            background-color: #3a7bc8;
+            transform: translateY(-2px);
+        }
+
+        .login-container button[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        .close-login {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-login:hover {
+            color: var(--accent);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--light);
+            cursor: pointer;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .loading-screen.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-icons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .loading-icon {
+            animation: pulse 1.5s infinite alternate;
+            margin: 0 1rem;
+        }
+
+        .loading-tip {
+            text-align: center;
+            max-width: 80%;
+            font-size: 1.2rem;
+            color: var(--light);
+            opacity: 0.8;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 6rem auto 2rem;
+            padding: 0 1rem;
+        }
+
+        .hero {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            height: calc(100vh - 6rem);
+        }
+
+        .hero-text {
+            flex: 1;
+            z-index: 1;
+        }
+
+        .hero-text h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--light);
+        }
+
+        .hero-text p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: var(--light);
+            opacity: 0.8;
+        }
+
+        .hero-image {
+            flex: 1;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 50%;
+            background-image: url('1.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .hero-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, var(--dark) 0%, rgba(26, 26, 46, 0.5) 100%);
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: var(--secondary);
+            color: var(--dark);
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            background-color: #45b168;
+            transform: translateY(-3px);
+        }
+
+        .cta-overview {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 600px;
+            background-color: var(--dark);
+            border: 2px solid var(--secondary);
+            border-radius: 8px;
+            padding: 2rem;
+            z-index: 2000;
+            display: none;
+        }
+
+        .cta-overview.active {
+            display: block;
+        }
+
+        .cta-overview h3 {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        .cta-overview ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .cta-overview li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .cta-overview li::before {
+            content: '\2022';
+            color: var(--secondary);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .close-overview {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 0.5rem;
+            color: var(--light);
+        }
+
+        .feature-card p {
+            font-size: 0.9rem;
+            color: var(--light);
+            opacity: 0.8;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1999;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .hero-image {
+                position: relative;
+                width: 100%;
+                height: 300px;
+            }
+
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: var(--primary);
+                padding: 1rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-links a {
+                padding: 0.5rem 0;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+                background: none;
+                border: none;
+                color: var(--light);
+                font-size: 1.5rem;
+                cursor: pointer;
+            }
+
+            .login-container {
+                padding: 2rem;
+                max-width: 90%;
+            }
+
+            .cta-overview {
+                width: 90%;
+            }
+
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+
+            .hero-text p {
+                font-size: 1rem;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">Chubs n' Kakin</div>
+            <div class="nav-links">
+                <a href="#" id="loginLink">Login</a>
+                <a href="#workouts">
+                    Chubs
+                    <div class="info-popup">
+                        <h4>Short, dark, and handsome</h4>
+                        <p>Ang unang gwapo na uyab na pinaka the best nga uyab ni kakin, is a very caring and loyal bf but clingy kaayo. Super love kaayo niya si kakin, and pinangga pagud kaayo na permi nalang niya ispoil.(crybaby kaayo nga clingy)</p>
+                    </div>
+                </a>
+                <a href="#nutrition">
+                    Kakin
+                    <div class="info-popup">
+                        <h4>1. Cute 2. Gwapa 3. Sexy 4. 1 n 2 n 3</h4>
+                        <p>Ang pinaka da best and maldita nga uyab ni chubs, is a very sweet and loving gf but strong kaayo permi usahay. Super duper love na love kaayo niya si chubs na maka ingon gud na "I love you to the moon and back, chubs".</p>
+                    </div>
+                </a>
+                <a href="#progress">
+                    History
+                    <div class="info-popup">
+                        <h4>Quick Summary</h4>
+                        <p>Basically nag kaila sila pag grad 9 though nag developay silag feelings blind lang kaayo si chubs, but fast forward during the summer break it was the 29th of May, they started to link up and not yet pa gani ma abot og week chubs started courting kakin and from then on they started dating and for eternity na sila.</p>
+                    </div>
+                </a>
+                <a href="#community">
+                    ???
+                    <div class="info-popup">
+                        <h4>Future Plans</h4>
+                        <p>Plans on travelling through all the island of the Philippines, own a car and motor; kang kakin kay pink kang chubs kay blue, have a family with 2 to 3 kids and if makaya kay hala 5 para marami, own pets and have a stable job.</p>
+                    </div>
+                </a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-container">
+            <button class="close-login" id="closeLogin" aria-label="Close login form">&times;</button>
+            <h2>Let's explore!</h2>
+            <form id="loginForm">
+                <div style="position: relative; margin-bottom: 1rem;">
+                    <input type="email" id="email" placeholder="Email" required aria-label="Email">
+                </div>
+                <div style="position: relative; margin-bottom: 1rem;">
+                    <input type="password" id="password" placeholder="Password" required aria-label="Password">
+                    <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password visibility">
+                        <i class="far fa-eye"></i>
+                    </button>
+                </div>
+                <button type="submit">Log In</button>
+            </form>
+            <p style="text-align: center; margin-top: 1rem;">
+                <a href="#" style="color: var(--primary); text-decoration: none; transition: color 0.3s ease;">Forgot password?</a>
+            </p>
+        </div>
+    </div>
+
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-icons">
+            <i class="fas fa-kiss loading-icon" aria-hidden="true"></i>
+            <i class="fas fa-heart loading-icon" aria-hidden="true"></i>
+            <i class="fas fa-book loading-icon" aria-hidden="true"></i>
+        </div>
+        <p class="loading-tip" id="loadingTip" aria-live="polite"></p>
+    </div>
+
+    <main class="main-content">
+        <section class="hero">
+            <div class="hero-text">
+                <h1>For Eternity♾</h1>
+                <p>Usahay away perming sweet cgeh lag samok pero forever romantic.</p>
+                <button class="cta-button" id="ctaButton">Short Description</button>
+            </div>
+            <div class="hero-image" role="img" aria-label="Person exercising in a gym"></div>
+        </section>
+
+        <div class="overlay" id="overlay"></div>
+        <div class="cta-overview" id="ctaOverview">
+            <button class="close-overview" id="closeOverview" aria-label="Close overview">&times;</button>
+            <h3>Chubs n' Kakin</h3>
+            <p>Chubs n' Kakin is an online love journal platform that offers:</p>
+            <ul>
+                <li>Photo gallery of chubs n' kakin😍</li>
+                <li>Love History🥰</li>
+                <li>What we plan on doing for the future🕗</li>
+                <li>Their bucket list📃</li>
+            </ul>
+            <p>Log in and see the adventures and happenings of Chubs n' Kakin!</p>
+        </div>
+
+        <section class="features">
+            <div class="feature-card">
+                <i class="fas fa-heart" aria-hidden="true"></i>
+                <h3>Love Status</h3>
+                <p>Passionate and healthy relationship.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-seedling" aria-hidden="true"></i>
+                <h3>Growth</h3>
+                <p>Learning, growing, and adapting is what we call love.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-bed" aria-hidden="true"></i>
+                <h3>Each Others Rest</h3>
+                <p>Advanced analytics to monitor your improvements and keep you motivated.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-paw" aria-hidden="true"></i>
+                <h3>Favorite animals</h3>
+                <p>Kakin likes to have a pet dog while Chubs likes to have a pet iguana.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-person-walking" aria-hidden="true"></i>
+                <h3>Destination Description</h3>
+                <p>They don't care if their money will be ubos as long as they are happy.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-smile" aria-hidden="true"></i>
+                <h3>Happiness</h3>
+                <p>So jolly and guillible when they are together.</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Login overlay functionality
+        const loginLink = document.getElementById('loginLink');
+        const loginOverlay = document.getElementById('loginOverlay');
+        const closeLogin = document.getElementById('closeLogin');
+        const loginForm = document.getElementById('loginForm');
+        const passwordInput = document.getElementById('password');
+        const passwordToggle = document.getElementById('passwordToggle');
+        const loadingScreen = document.getElementById('loadingScreen');
+        const loadingTip = document.getElementById('loadingTip');
+        const ctaButton = document.getElementById('ctaButton');
+        const ctaOverview = document.getElementById('ctaOverview');
+        const closeOverview = document.getElementById('closeOverview');
+        const overlay = document.getElementById('overlay');
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navLinks = document.querySelector('.nav-links');
+
+        loginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginOverlay.classList.add('active');
+        });
+
+        closeLogin.addEventListener('click', () => {
+            loginOverlay.classList.remove('active');
+        });
+
+        loginOverlay.addEventListener('click', (e) => {
+            if (e.target === loginOverlay) {
+                loginOverlay.classList.remove('active');
+            }
+        });
+
+        passwordToggle.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            passwordToggle.querySelector('i').classList.toggle('fa-eye');
+            passwordToggle.querySelector('i').classList.toggle('fa-eye-slash');
+        });
+
+        ctaButton.addEventListener('click', () => {
+            ctaOverview.classList.add('active');
+            overlay.classList.add('active');
+        });
+
+        closeOverview.addEventListener('click', () => {
+            ctaOverview.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            ctaOverview.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        const love = [
+            "Gwapa si kakin.",
+            "Gwapo si Chubs.",
+            "I miss my baby.",
+            "For eternity.",
+            "To the moon and back.",
+            "Gwapa lgeh si kakin kaayo.",
+            "Chubs pinaka gwapo.",
+            "Kakin loves chubs.",
+            "Chubs loves kakin.",
+            "WE LOVE EACH OTHER!!!."
+        ];
+
+        function getRandomMsg() {
+            return love[Math.floor(Math.random() * fitnessTips.length)];
+        }
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = passwordInput.value;
+            
+            // Here you would typically send the login data to your server
+            console.log('Login attempt:', { email, password });
+            
+            // Simulate a successful login
+            loginOverlay.classList.remove('active');
+            loadingScreen.classList.add('active');
+            
+            // Display random fitness tips during loading
+            let loveIndex = 0;
+            const loveInterval = setInterval(() => {
+                loadingTip.textContent = getRandomTip();
+                tipIndex++;
+                if (loveIndex >= love.length) {
+                    clearInterval(loveInterval);
+                }
+            }, 3000);
+            
+          /* // Simulate loading time (6 seconds)
+            setTimeout(() => {
+                loadingScreen.classList.remove('active');
+                clearInterval(loveInterval);
+                // Redirect to Entrep6.html after successful login
+                window.location.href = 'dashboard.html';
+            }, 6000);
+        }); */
+
+        // Mobile menu functionality
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Add animation to feature cards on scroll
+        const featureCards = document.querySelectorAll('.feature-card');
+
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        featureCards.forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(card);
+        });
+
+        // Add hover effect to feature cards
+        featureCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-5px)';
+                card.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.1)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+                card.style.boxShadow = 'none';
+            });
+        });
+
+        // Add parallax effect to hero image
+        const heroImage = document.querySelector('.hero-image');
+        window.addEventListener('scroll', () => {
+            const scrollPosition = window.pageYOffset;
+            heroImage.style.backgroundPositionY = `${scrollPosition * 0.5}px`;
+        });
+    </script>
+</body>
+</html>
