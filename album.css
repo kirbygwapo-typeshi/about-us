@@ -143,8 +143,8 @@ body {
 }
 
 .custom-image {
-  width: 400px;
-  height: 600px;
+  width: 800px;
+  height: 1000px;
   object-fit: cover;
 }
 .top-content {
