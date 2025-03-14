@@ -147,27 +147,6 @@ body {
   height: 600px;
   object-fit: cover;
 }
-.custom-image:before,
-.custom-image:after {
-  top: -25px;
-  width: 0;
-  height: 0;
-  border-bottom: 80px solid #333;
-  border-right: 50px solid transparent;
-  border-left: 50px solid transparent;
-  border-radius: 33px;
-}
-.custom-image:before {
-  right: -20px;
-  transform: rotate(32deg);
-  -webkit-transform: rotate(32deg);
-}
-.custom-image:after {
-  left: -20px;
-  transform: rotate(-32deg);
-  -webkit-transform: rotate(-32deg);
-}
-
 .top-content {
   display: flex;
   flex-flow: column;
