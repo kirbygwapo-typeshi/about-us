@@ -39,7 +39,7 @@ body {
   cursor: pointer;
   position: relative;
 }
-.txt-meowish {
+.txt-Chubs n' Kakin {
   position: absolute;
   top: 65%;
   color: rgb(78, 78, 78);
@@ -142,7 +142,7 @@ body {
   -webkit-transform: rotateX(90deg);
 }
 
-.cat-mark {
+.heart-mark {
   position: relative;
   width: 200px;
   height: 170px;
@@ -150,8 +150,8 @@ body {
   border-radius: 60% 60% 90px 90px;
   margin: 150px auto auto;
 }
-.cat-mark:before,
-.cat-mark:after {
+.heart-mark:before,
+.heart-mark:after {
   top: -25px;
   width: 0;
   height: 0;
@@ -160,12 +160,12 @@ body {
   border-left: 50px solid transparent;
   border-radius: 33px;
 }
-.cat-mark:before {
+.heart-mark:before {
   right: -20px;
   transform: rotate(32deg);
   -webkit-transform: rotate(32deg);
 }
-.cat-mark:after {
+.heart-mark:after {
   left: -20px;
   transform: rotate(-32deg);
   -webkit-transform: rotate(-32deg);
